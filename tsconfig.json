@@ -1,0 +1,21 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"moduleResolution": "nodenext",
+		"esModuleInterop": true,
+		"module": "ESNext",
+		"target": "ESNext",
+		"outDir": "dist",
+		"declaration": true,
+		"sourceMap": true,
+		"alwaysStrict": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
+	},
+	"include": ["src"],
+	"exclude": ["**/*.spec.ts"],
+	"ts-node": {
+		"esm": true,
+		"experimentalSpecifierResolution": "node"
+	}
+}
