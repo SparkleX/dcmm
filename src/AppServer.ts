@@ -23,11 +23,7 @@ export class AppServer {
     oPool: GenericPool;
     
     public constructor() {
-        this.oKoa = new Koa();
-        this.oKoa.use(koaLogger());
-        this.oKoa.use(bodyParser());
-        this.oKoa.use(dbConnection.bind(this));
-        init(daoCallback);
+
     }
     private async initDatabase():Promise<void> {
 		const poolConfig: GenericPoolConfig = {
@@ -86,6 +82,11 @@ export class AppServer {
         return files;
     }
     public async start(port: number): Promise<void> {
+        this.oKoa = new Koa();
+        this.oKoa.use(koaLogger());
+        this.oKoa.use(bodyParser());
+        this.oKoa.use(dbConnection.bind(this));
+        init(daoCallback);
         this.initControllers();
         await this.initDatabase();
         this.oKoa.listen(port);
