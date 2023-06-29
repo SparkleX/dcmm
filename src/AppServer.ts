@@ -6,15 +6,46 @@ import KoaRouter, { RouterContext } from "koa-router";
 import { glob } from "glob";
 import jsonfile from "jsonfile";
 import { RestApis, MethodBinding } from "dcmm-schema";
+import { Context } from "./Context.js"
+import { init } from "metal-dao";
+import { GenericPool, GenericPoolConfig } from "db-conn-pool";
+import { MySqlDriver } from "db-conn-mysql";
+import { dbConnection } from "./middleware/DatabaseConnection.js"
+
+function daoCallback (query: string, params:any[], target: object, propertyKey: string, context?: string){
+    console.debug("daoCallback")
+    return "data"
+}
 
 export class AppServer {
     services: { [n: string]: BaseService<any> } = {};
     oKoa: Koa<Koa.DefaultState, Koa.DefaultContext>;
-
+    oPool: GenericPool;
+    
     public constructor() {
         this.oKoa = new Koa();
         this.oKoa.use(koaLogger());
         this.oKoa.use(bodyParser());
+        this.oKoa.use(dbConnection.bind(this));
+        init(daoCallback);
+    }
+    private async initDatabase():Promise<void> {
+		const poolConfig: GenericPoolConfig = {
+			min: 2,
+			max: 5,
+			testOnBorrow: false,
+		};
+		const oConfig = {
+            host: 'localhost',
+            user: 'root',
+            database: 'db1',
+            password:'12345678'
+		};
+        const oDriver = new MySqlDriver();
+
+		this.oPool = new GenericPool(oDriver, oConfig, poolConfig);
+		const oConn = await this.oPool.getConnection();
+		await oConn.close();
     }
     private initControllers() {
         const files = this.scanControllers();
@@ -39,8 +70,11 @@ export class AppServer {
                     if (!targetFunc) {
                         throw `function "${functionName}" is not exists on service "${serviceName}"`;
                     }
+                    console.info(`[add router] ${method} ${path}`)
                     oRouters[method](path, async (ctx: RouterContext) => {
-                        ctx.body = await service[functionName](ctx.request.body);
+                        const dcmmContext = ctx["_context"] as Context;
+                        dcmmContext.httpParams = ctx.params;
+                        ctx.body = await service[functionName](dcmmContext);
                     });
                 }
             }
@@ -49,11 +83,11 @@ export class AppServer {
     }
     private scanControllers(): string[] {
         const files = glob.sync(`resources/rest/*.rest.json`);
-        //console.info(files);
         return files;
     }
     public async start(port: number): Promise<void> {
         this.initControllers();
+        await this.initDatabase();
         this.oKoa.listen(port);
         console.info(`Server start on port ${port}`);
     }

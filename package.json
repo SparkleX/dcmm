@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "link": "npm link dcmm-schema"
+    "link": "npm link dcmm-schema metal-dao db-conn-mysql"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +23,7 @@
     "typescript": "^5.1.5"
   },
   "dependencies": {
+    "db-conn-pool": "^1.0.0",
     "glob": "^10.3.1",
     "jsonfile": "^6.1.0"
   }
