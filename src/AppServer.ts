@@ -15,8 +15,10 @@ import dotenv from "dotenv";
 
 
 function daoCallback (query: string, params:any[], target: object, propertyKey: string, context?: string){
-    console.debug("daoCallback")
-    return "data"
+    console.debug("daoCallback");
+    const ctx = params[0] as Context;
+    const promise = ctx.connection.executeQuery(query,[]);
+    return promise;
 }
 
 export class AppServer {

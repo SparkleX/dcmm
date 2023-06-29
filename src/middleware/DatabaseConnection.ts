@@ -1,6 +1,5 @@
 import Koa, { Next } from "koa";
 import { Context } from "../Context.js";
-import { DataSource } from "db-conn";
 import { AppServer } from "../AppServer.js";
 
 export async function dbConnection(ctx: Koa.Context, next: Next) {
