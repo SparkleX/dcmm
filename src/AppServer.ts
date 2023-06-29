@@ -11,6 +11,8 @@ import { init } from "metal-dao";
 import { GenericPool, GenericPoolConfig } from "db-conn-pool";
 import { MySqlDriver } from "db-conn-mysql";
 import { dbConnection } from "./middleware/DatabaseConnection.js"
+import dotenv from "dotenv";
+
 
 function daoCallback (query: string, params:any[], target: object, propertyKey: string, context?: string){
     console.debug("daoCallback")
@@ -23,6 +25,7 @@ export class AppServer {
     oPool: GenericPool;
     
     public constructor() {
+        dotenv.config();
 
     }
     private async initDatabase():Promise<void> {
@@ -31,12 +34,8 @@ export class AppServer {
 			max: 5,
 			testOnBorrow: false,
 		};
-		const oConfig = {
-            host: 'localhost',
-            user: 'root',
-            database: 'db1',
-            password:'12345678'
-		};
+		const oConfig = JSON.parse(process.env.DB_CONFIG);
+
         const oDriver = new MySqlDriver();
 
 		this.oPool = new GenericPool(oDriver, oConfig, poolConfig);
