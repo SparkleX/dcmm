@@ -5,7 +5,7 @@ import { BaseService } from "./BaseService.js";
 import KoaRouter, { RouterContext } from "koa-router";
 import { glob } from "glob";
 import jsonfile from "jsonfile";
-import { RestApis, MethodBinding } from "core-schema";
+import { RestApis, MethodBinding } from "dcmm-schema";
 import { Context } from "./Context.js"
 import { init } from "metal-dao";
 import { GenericPool, GenericPoolConfig } from "db-conn-pool";

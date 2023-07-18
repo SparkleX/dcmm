@@ -18,17 +18,10 @@ export async function dbConnection(ctx: Koa.Context, next: Next) {
         
         await next();
         console.debug("commit db conn...");
-        //await context.conn.commit();
+        await dcmmContext.connection.commit();
     } catch (e) {
         console.error(e);
-        /* console.error(e);
-         ctx.status = 500;
-         ctx.body = {
-             message: e.message,
-             path: e.path
-         };
-
-         console.error(e);*/
+        await dcmmContext.connection.rollback();
     } finally {
         dcmmContext.connection.close();
     }
