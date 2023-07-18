@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "link": "npm link dcmm-schema metal-dao db-conn-mysql"
+    "link": "npm link core-schema metal-dao db-conn-mysql sql-access"
   },
   "author": "",
   "license": "ISC",
