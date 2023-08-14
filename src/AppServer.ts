@@ -8,8 +8,8 @@ import jsonfile from "jsonfile";
 import { RestApis, MethodBinding } from "dcmm-schema";
 import { Context } from "./Context.js"
 import { init } from "metal-dao";
-import { GenericPool, GenericPoolConfig } from "db-conn-pool";
-import { MySqlDriver } from "db-conn-mysql";
+import { DataSource } from "db-conn"
+import { MySqlDataSource, MySqlDriver } from "db-conn-mysql";
 import { dbConnection } from "./middleware/DatabaseConnection.js"
 import dotenv from "dotenv";
 
@@ -24,23 +24,14 @@ function daoCallback (query: string, params:any[], target: object, propertyKey: 
 export class AppServer {
     services: { [n: string]: BaseService<any> } = {};
     oKoa: Koa<Koa.DefaultState, Koa.DefaultContext>;
-    oPool: GenericPool;
+    oPool: DataSource;
     
     public constructor() {
         dotenv.config();
-
     }
     private async initDatabase():Promise<void> {
-		const poolConfig: GenericPoolConfig = {
-			min: 2,
-			max: 5,
-			testOnBorrow: false,
-		};
 		const oConfig = JSON.parse(process.env.DB_CONFIG);
-
-        const oDriver = new MySqlDriver();
-
-		this.oPool = new GenericPool(oDriver, oConfig, poolConfig);
+		this.oPool = new MySqlDataSource(oConfig);
 		const oConn = await this.oPool.getConnection();
 		await oConn.close();
     }
